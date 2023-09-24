@@ -4,7 +4,7 @@ blog-posts
 Blog Posts
 
 
-Code and notebooks for many of my [blog posts]((https://r-mart.github.io/))
+Code and notebooks for many of my [blog posts](https://r-mart.github.io/)
 
 
 Project Organization
