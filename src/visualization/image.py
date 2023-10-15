@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 from bokeh.plotting import figure, show
-from bokeh.palettes import Oranges3
+from bokeh.palettes import Oranges3, Inferno256
 from bokeh.colors import RGB
 from bokeh.models import (
     HoverTool,
@@ -136,6 +136,53 @@ def add_seg_on_img(
         HoverTool(
             renderers=[r],
             tooltips=[("annotation", "@annot")],
+            attachment="below",
+        )
+    )
+
+    return p
+
+
+def add_score_map_on_img(
+    p: figure,
+    score_map: np.ndarray,
+    red_factor: int = 2,
+    alpha: float = 0.25,
+    flip: bool = True,
+) -> figure:
+    """Adds a score map on a bokeh figure"""
+    h, w = score_map.shape[:2]
+
+    # bokeh by default uses origin bottom left (origin option leads to missmatch with tooltip)
+    if flip:
+        score_map = score_map[::-1]
+
+    color_mapper = LinearColorMapper(
+        palette=Inferno256, low=score_map.min(), high=score_map.max()
+    )
+
+    cds = ColumnDataSource(dict(score=[score_map]))
+
+    glyph = bkm.Image(
+        image="score",
+        x=0,
+        y=0,
+        dw=w,
+        dh=h,
+        color_mapper=color_mapper,
+        global_alpha=alpha,
+    )
+
+    r = p.add_glyph(cds, glyph)
+
+    # change original hover attachment to allow showing both simultaneously
+    hover = p.select(dict(type=HoverTool))[0]
+    hover.attachment = "above"
+
+    p.add_tools(
+        HoverTool(
+            renderers=[r],
+            tooltips=[("score", "@score")],
             attachment="below",
         )
     )
