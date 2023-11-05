@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 from PIL import Image
 from bokeh.plotting import figure, show
@@ -149,6 +150,7 @@ def add_score_map_on_img(
     red_factor: int = 2,
     alpha: float = 0.25,
     flip: bool = True,
+    max_score: Optional[float] = None,
 ) -> figure:
     """Adds a score map on a bokeh figure"""
     h, w = score_map.shape[:2]
@@ -157,8 +159,13 @@ def add_score_map_on_img(
     if flip:
         score_map = score_map[::-1]
 
+    if max_score is None:
+        max_score = score_map.max()
+    else:
+        max_score = max(max_score, score_map.max())
+
     color_mapper = LinearColorMapper(
-        palette=Inferno256, low=score_map.min(), high=score_map.max()
+        palette=Inferno256, low=score_map.min(), high=max_score
     )
 
     cds = ColumnDataSource(dict(score=[score_map]))
