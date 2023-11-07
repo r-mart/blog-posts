@@ -19,14 +19,9 @@ def save_plot_from_notebook_to_html(
 ) -> None:
     """To save a bokeh plot from notebook to a file we temporarily need to change the output target"""
 
-    # switch to file output so save the plot
-    reset_output()
+    # switch to file output so save the plots
     bokeh_file_setup(output_path, title)
     save(p)
-
-    # switch back to notebook output
-    reset_output()
-    bokeh_notebook_setup()
 
 
 def bokeh_notebook_setup():
